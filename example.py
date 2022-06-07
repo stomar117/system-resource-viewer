@@ -13,36 +13,6 @@ import psutil
 from psutil import Process
 
 
-@dataclass(slots=True, frozen=True)
-class ProcessData:
-    name: str
-    pid: int
-    cpu_percent: float
-    mem_percent: float
-
-
-class ProcessHandler(object):
-    def __init__(self) -> None:
-        self.process_list: list[ProcessData] = []
-        pass
-
-    def generate_process_list(self, psutil_proc_list: list[Process]) -> None:
-        for proc in psutil_proc_list:
-            self.process_list.append(ProcessData(
-                name=proc.name(),
-                pid = proc.pid,
-                cpu_percent=proc.cpu_percent(interval=1),
-                mem_percent=proc.memory_percent()
-            ))
-        pass
-
-
-class RecallWindow(Exception):
-    def __init__(self, *args: object, recall_window: bool = True) -> None:
-        self.recall_window = recall_window
-        super().__init__(*args)
-
-
 class SortingStrategy(Enum):
     BY_RAM_PERCENT = operator.methodcaller("memory_percent")
     BY_CPU_PERCENT = operator.methodcaller("cpu_percent", interval=0.5)
